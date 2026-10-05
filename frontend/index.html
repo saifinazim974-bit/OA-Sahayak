@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OA-Sahayak | AI OA Screening</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-icon">🦴</div>
+        <div><strong>OA-Sahayak</strong><small>AI Screening</small></div>
+      </div>
+      <nav>
+        <a class="nav-link active" href="index.html">⌂ <span data-en="Dashboard" data-hi="डैशबोर्ड">Dashboard</span></a>
+        <a class="nav-link" href="pages/patient.html">＋ <span data-en="New Patient" data-hi="नया मरीज">New Patient</span></a>
+        <a class="nav-link" href="pages/assessment.html">▣ <span data-en="Screening" data-hi="स्क्रीनिंग">Screening</span></a>
+        <a class="nav-link" href="pages/history.html">◷ <span data-en="Patient History" data-hi="मरीज इतिहास">Patient History</span></a>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="offline-dot"></div>
+        <span>Offline mode ready</span>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">PRIMARY HEALTHCARE • NER</p>
+          <h1 data-en="Screening Dashboard" data-hi="स्क्रीनिंग डैशबोर्ड">Screening Dashboard</h1>
+        </div>
+        <div class="top-actions">
+          <button id="langBtn" class="ghost-btn">हिंदी</button>
+          <div class="worker"><span class="avatar">HW</span><div><strong>Health Worker</strong><small>Field Unit 01</small></div></div>
+        </div>
+      </header>
+
+      <section class="hero">
+        <div>
+          <span class="pill">AI-ASSISTED • PRELIMINARY SCREENING</span>
+          <h2>Early detection starts with a simple screening.</h2>
+          <p>Assess pain, mobility, gait and movement markers and identify patients who may need clinical evaluation.</p>
+          <a class="primary-btn" href="pages/patient.html">＋ Start New Screening</a>
+        </div>
+        <div class="hero-art"><div class="pulse">✚</div><div class="joint">●</div></div>
+      </section>
+
+      <section class="stats">
+        <div class="stat-card"><span>Patients screened</span><strong id="patientsCount">0</strong><small>This device</small></div>
+        <div class="stat-card"><span>High-risk flags</span><strong id="highCount">0</strong><small>Needs clinical review</small></div>
+        <div class="stat-card"><span>Pending sync</span><strong id="pendingCount">0</strong><small>Stored offline</small></div>
+        <div class="stat-card"><span>Today</span><strong id="todayCount">0</strong><small>Screenings</small></div>
+      </section>
+
+      <section class="grid-2">
+        <div class="panel">
+          <div class="panel-head"><div><h3>Screening workflow</h3><p>Four simple steps for field assessment.</p></div></div>
+          <div class="steps">
+            <div class="step"><b>01</b><div><strong>Patient profile</strong><span>Basic demographic and risk factors</span></div></div>
+            <div class="step"><b>02</b><div><strong>Symptoms</strong><span>Pain, stiffness and mobility questionnaire</span></div></div>
+            <div class="step"><b>03</b><div><strong>Movement test</strong><span>Camera-assisted gait and ROM assessment</span></div></div>
+            <div class="step"><b>04</b><div><strong>AI screening result</strong><span>Risk category and next-step guidance</span></div></div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head"><div><h3>Recent screenings</h3><p>Saved on this device.</p></div><a href="pages/history.html">View all →</a></div>
+          <div id="recentList" class="recent-list"><div class="empty">No screenings yet. Start your first patient assessment.</div></div>
+        </div>
+      </section>
+
+      <footer class="disclaimer">
+        <strong>Important:</strong> OA-Sahayak is a screening and decision-support prototype. It does not provide a definitive medical diagnosis. High-risk results should be reviewed by a qualified healthcare professional.
+      </footer>
+    </main>
+  </div>
+  <script src="js/app.js"></script>
+</body>
+</html>

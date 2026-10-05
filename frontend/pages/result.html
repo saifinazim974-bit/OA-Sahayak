@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Screening Result | OA-Sahayak</title><link rel="stylesheet" href="../css/style.css"></head>
+<body><div class="app-shell">
+<aside class="sidebar"><div class="brand"><div class="brand-icon">🦴</div><div><strong>OA-Sahayak</strong><small>AI Screening</small></div></div>
+<nav><a class="nav-link" href="../index.html">⌂ Dashboard</a><a class="nav-link" href="patient.html">＋ New Patient</a><a class="nav-link active" href="assessment.html">▣ Screening</a><a class="nav-link" href="history.html">◷ Patient History</a></nav></aside>
+<main class="main"><header class="topbar"><div><p class="eyebrow">STEP 4 OF 4</p><h1>Preliminary Screening Result</h1></div><button onclick="window.print()" class="ghost-btn">Print Report</button></header>
+<section class="result-hero">
+<div>
+<span class="pill">AI-ASSISTED SCREENING</span>
+<h2 id="resultTitle">Assessment Result</h2>
+<p id="resultPatient">Loading patient assessment...</p>
+</div>
+<div class="score-ring" id="scoreRing"><strong id="score">--</strong><span>/ 100</span></div>
+</section>
+
+<section class="grid-2">
+<div class="panel">
+<h3>Risk classification</h3>
+<div id="riskBadge" class="risk-badge">Loading...</div>
+<p id="resultMessage" class="result-message"></p>
+
+<h3 style="margin-top:22px">Complete calculation</h3>
+<div class="breakdown" id="calcBreakdown">
+<div><span>Age contribution</span><b id="cAge">—</b></div>
+<div><span>BMI contribution</span><b id="cBmi">—</b></div>
+<div><span>Pain contribution</span><b id="cPain">—</b></div>
+<div><span>Stiffness contribution</span><b id="cStiffness">—</b></div>
+<div><span>Mobility contribution</span><b id="cMobility">—</b></div>
+<div><span>Function contribution</span><b id="cFunction">—</b></div>
+<div><span>Previous injury</span><b id="cInjury">—</b></div>
+<div><span>Gait contribution</span><b id="cGait">—</b></div>
+<div><span>ROM contribution</span><b id="cRom">—</b></div>
+<div><span>Total score</span><b id="cTotal">—</b></div>
+</div>
+</div>
+
+<div class="panel">
+<h3>Patient & movement data</h3>
+<div class="breakdown">
+<div><span>Patient</span><b id="pName">—</b></div>
+<div><span>Patient ID</span><b id="pId">—</b></div>
+<div><span>Age</span><b id="pAge">—</b></div>
+<div><span>BMI</span><b id="pBmi">—</b></div>
+<div><span>Pain</span><b id="rPain">—</b></div>
+<div><span>Stiffness</span><b id="rStiffness">—</b></div>
+<div><span>Mobility</span><b id="rMobility">—</b></div>
+<div><span>Gait symmetry</span><b id="rGait">—</b></div>
+<div><span>ROM score</span><b id="rRom">—</b></div>
+</div>
+</div>
+</section>
+
+<section class="panel">
+<h3>Suggested next steps</h3>
+<ul class="guidance">
+<li>Review the screening result with a qualified healthcare professional.</li>
+<li>Consider appropriate low-impact physical activity and joint-care education.</li>
+<li>Refer higher-risk or concerning cases for clinical assessment.</li>
+<li>Document follow-up findings in the patient record.</li>
+</ul>
+</section>
+
+<div class="disclaimer"><strong>Clinical safety:</strong> This is a prototype screening calculation, not a diagnosis. The score has not been clinically validated and must not replace professional assessment or imaging when clinically indicated.</div>
+</main></div><script src="../js/app.js"></script>
+<script>
+(function(){
+  const raw=localStorage.getItem("oa_current_result");
+  if(!raw){ console.warn("No screening result found"); return; }
+  const d=JSON.parse(raw);
+
+  const age=Number(d.age||0), bmi=Number(d.bmi||0), pain=Number(d.pain||0);
+  const stiffness=Number(d.stiffness||0), mobility=Number(d.mobility||0);
+  const fn=Number(d.function||0), gait=Number(d.gaitScore||88), rom=Number(d.romScore||86);
+
+  let ageC=age>=60?15:age>=50?10:age>=40?5:0;
+  let bmiC=bmi>=30?15:bmi>=25?8:0;
+  let painC=pain*4, stiffnessC=stiffness*4, mobilityC=mobility*5, functionC=fn*3;
+  let injuryC=String(d.injury).toLowerCase()==="yes"?10:0;
+  let gaitC=Math.max(0,100-gait)*0.12;
+  let romC=Math.max(0,100-rom)*0.12;
+  let total=Math.min(100,Math.round(ageC+bmiC+painC+stiffnessC+mobilityC+functionC+injuryC+gaitC+romC));
+  const category=total<35?"LOW":total<65?"MODERATE":"HIGH";
+
+  const set=(id,val)=>{const e=document.getElementById(id);if(e)e.textContent=val;};
+  set("score",total);
+  set("resultTitle",category+" risk indication");
+  set("resultPatient",(d.name||"Patient")+" • "+(d.id||"No ID")+" • "+new Date(d.date||Date.now()).toLocaleDateString());
+  set("pName",d.name||"—"); set("pId",d.id||"—"); set("pAge",age||"—"); set("pBmi",bmi?bmi+" kg/m²":"Not provided");
+  set("rPain",pain+"/10");
+  set("rStiffness",["None","Mild","Moderate","Severe"][stiffness]||"—");
+  set("rMobility",["None","Mild","Moderate","Severe"][mobility]||"—");
+  set("rGait",gait+"%"); set("rRom",rom+"%");
+  set("cAge","+"+ageC); set("cBmi","+"+bmiC); set("cPain","+"+painC);
+  set("cStiffness","+"+stiffnessC); set("cMobility","+"+mobilityC); set("cFunction","+"+functionC);
+  set("cInjury","+"+injuryC); set("cGait","+"+gaitC.toFixed(1)); set("cRom","+"+romC.toFixed(1)); set("cTotal",total+"/100");
+
+  const badge=document.getElementById("riskBadge");
+  badge.textContent=category+" RISK";
+  badge.className="risk-badge risk-"+category.toLowerCase();
+  const msg=category==="HIGH"?"Clinical evaluation is recommended based on this screening indication."
+    :category==="MODERATE"?"Consider clinical review and preventive joint-care guidance."
+    :"No high-risk screening pattern was detected; continue routine monitoring and preventive care.";
+  set("resultMessage",msg);
+})();
+</script></body></body></html>
