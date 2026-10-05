@@ -34,7 +34,7 @@ function setupLanguage(){
 
 function setupPatient(){
   const form=document.getElementById('patientForm'); if(!form)return;
-  form.onsubmit=e=>{
+   form.onsubmit=e=>{
     e.preventDefault();
     const d=Object.fromEntries(new FormData(form).entries());
     d.bmi=bmi(d.height,d.weight);
@@ -44,22 +44,40 @@ function setupPatient(){
 }
 
 function setupAssessment(){
-  const form=document.getElementById('assessmentForm'); if(!form)return;
-  const slider=document.getElementById('pain'), out=document.getElementById('painOut');
+  const form=document.getElementById('assessmentForm');
+  if(!form)return;
+
+  const slider=document.getElementById('pain');
+  const out=document.getElementById('painOut');
+
   slider.oninput=()=>out.textContent=slider.value;
-  const camBtn=document.getElementById('cameraBtn'), video=document.getElementById('camera');
+
+  const camBtn=document.getElementById('cameraBtn');
+  const video=document.getElementById('camera');
+
   camBtn.onclick=async()=>{
     try{
       const stream=await navigator.mediaDevices.getUserMedia({video:true});
-      video.srcObject=stream; video.hidden=false; camBtn.textContent='Camera enabled';
+      video.srcObject=stream;
+      video.hidden=false;
+      camBtn.textContent='Camera enabled';
+
       document.getElementById('gait').textContent='88%';
       document.getElementById('rom').textContent='86%';
       document.getElementById('posture').textContent='Captured';
-    }catch(err){alert('Camera permission was not granted. You can continue with the prototype assessment.')}
+
+    }catch(err){
+      alert('Camera permission was not granted. You can continue with the prototype assessment.');
+    }
   };
-  form.onsubmit=e=>{
+
+  form.onsubmit=async e=>{
     e.preventDefault();
-    const patient=JSON.parse(localStorage.getItem('oa_current_patient')||'{}');
+
+    const patient=JSON.parse(
+      localStorage.getItem('oa_current_patient')||'{}'
+    );
+
     const d={
       ...patient,
       pain:slider.value,
@@ -70,22 +88,43 @@ function setupAssessment(){
       romScore:document.getElementById('rom').textContent.replace('%','')||86,
       date:new Date().toISOString()
     };
-    try {
-      const response = await fetch('http://127.0.0.1:5000/api/screen', {
-        method: 'POST',
-        headers: {'Content-Type':'application/json'},
-        body: JSON.stringify(d)
-      });
-      if (!response.ok) throw new Error('API request failed');
-      const result = await response.json();
-      d.score = result.score;
-      d.category = result.category;
-      d.patient_id = result.patient_id;
-      d.screening_id = result.screening_id;
-      localStorage.setItem('oa_current_result', JSON.stringify(d));
+
+    try{
+      const response=await fetch(
+        'https://oa-sahayak.onrender.com/api/screen',
+        {
+          method:'POST',
+          headers:{
+            'Content-Type':'application/json'
+          },
+          body:JSON.stringify(d)
+        }
+      );
+
+      if(!response.ok){
+        throw new Error('API request failed');
+      }
+
+      const result=await response.json();
+
+      d.score=result.score;
+      d.category=result.category;
+      d.patient_id=result.patient_id;
+      d.screening_id=result.screening_id;
+
+      localStorage.setItem(
+        'oa_current_result',
+        JSON.stringify(d)
+      );
+
       location.href='result.html';
-    } catch (error) {
-      alert('Flask backend se connection nahi ho pa raha. Check karein ki python app.py abhi bhi running hai.');
+
+    }catch(error){
+      console.error(error);
+
+      alert(
+        'Online backend se connection nahi ho pa raha. Please try again.'
+      );
     }
   };
 }
@@ -108,7 +147,7 @@ function setupResult(){
 function setupDashboard(){
   const count=document.getElementById('patientsCount'); if(!count)return;
   const today=new Date().toDateString();
-  fetch('http://127.0.0.1:5000/api/screenings')
+   fetch('https://oa-sahayak.onrender.com/api/screenings')
     .then(r=>r.json())
     .then(payload=>{
       const records=payload.records||[];
@@ -127,7 +166,7 @@ function setupDashboard(){
 
 function setupHistory(){
   const body=document.getElementById('historyBody'); if(!body)return;
-  fetch('http://127.0.0.1:5000/api/screenings')
+   fetch('https://oa-sahayak.onrender.com/api/screenings')
     .then(r=>r.json())
     .then(payload=>{
       const records=payload.records||[];
